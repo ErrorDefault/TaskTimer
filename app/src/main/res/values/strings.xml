@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Task Timer</string>
+    <string name="default_task_text">*insert task here*</string>
+    <string name="default_time">00:00:00</string>
+</resources>
