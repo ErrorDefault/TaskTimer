@@ -11,7 +11,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.text.InputType;
+import android.text.method.*;
 
 import java.util.ArrayList;
 
@@ -20,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<TaskDataModel> items;
     private ArrayAdapter<String> itemsAdapter;
     private ListView lvItems;
-    private TimerDBHelper mHelper = new TimerDBHelper(getApplicationContext());
+    private TimerDBHelper mHelper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         items.add(new TaskDataModel("Dryer", 2100, "DRY!"));
         */
 
-
+        TimerDBHelper mHelper = new TimerDBHelper(getApplicationContext());
 
         CustomAdapter adapter = new CustomAdapter(items, getApplicationContext());
         lvItems.setAdapter(adapter);
@@ -50,11 +53,26 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_add_task:
 //                Log.d(TAG, "Add a new task");
+                LinearLayout layout = new LinearLayout(getApplicationContext());
+                layout.setOrientation(LinearLayout.VERTICAL);
+
+                final EditText nameBox = new EditText(getApplicationContext());
+                nameBox.setHint("Name");
+                layout.addView(nameBox);
+
+                final EditText timeBox = new EditText(getApplicationContext());
+                timeBox.setHint("Time (Minutes)");
+                timeBox.setInputType(InputType.TYPE_CLASS_NUMBER);
+
+                layout.addView(timeBox);
+
+//                dialog.setView(layout);
+
                 final EditText taskEditText = new EditText(this);
+
                 AlertDialog dialog = new AlertDialog.Builder(this)
-                        .setTitle("Add a new task")
-                        .setMessage("What do you want to do next?")
-                        .setView(taskEditText)
+
+                        .setView(layout)
                         .setPositiveButton("Add", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
