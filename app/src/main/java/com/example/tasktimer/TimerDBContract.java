@@ -12,7 +12,7 @@ public class TimerDBContract {
     public static class TimerEntry implements BaseColumns {
         public static final String TABLE_NAME = "timerEntry";
         public static final String COLUMN_NAME = "timerName";
-        public static final String COLUMN_TIME= "timerTime";
+        public static final String COLUMN_TIME = "timerTime";
     }
 }
 

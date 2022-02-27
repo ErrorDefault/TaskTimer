@@ -8,9 +8,9 @@ public class TimerDBHelper extends SQLiteOpenHelper {
 
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + TimerDBContract.TimerEntry.TABLE_NAME + " (" +
-                    TimerDBContract.TimerEntry._ID + " INTEGER PRIMARY KEY," +
+                    TimerDBContract.TimerEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                     TimerDBContract.TimerEntry.COLUMN_NAME + " TEXT NOT NULL," +
-                    TimerDBContract.TimerEntry.COLUMN_TIME + " INT DEFAULT -1)";
+                    TimerDBContract.TimerEntry.COLUMN_TIME + " INTEGER DEFAULT -1)";
 
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + TimerDBContract.TimerEntry.TABLE_NAME;
