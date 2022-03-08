@@ -1,7 +1,10 @@
 package com.example.tasktimer;
 
 
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.CountDownTimer;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +12,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.core.app.NotificationCompat;
 
 import java.util.ArrayList;
 
@@ -21,7 +26,7 @@ public class CustomAdapter extends ArrayAdapter<TaskDataModel> implements View.O
     private static class ViewHolder {
         TextView txtName;
         TextView txtTime;
-        Button startButton;
+        Button startButton, deleteButton;
     }
 
     public CustomAdapter(ArrayList<TaskDataModel> data, Context context) {
@@ -57,6 +62,7 @@ public class CustomAdapter extends ArrayAdapter<TaskDataModel> implements View.O
             viewHolder.txtName = (TextView) convertView.findViewById(R.id.task_title);
             viewHolder.txtTime = (TextView) convertView.findViewById(R.id.task_time);
             viewHolder.startButton = (Button) convertView.findViewById(R.id.start_button);
+            viewHolder.deleteButton = (Button) convertView.findViewById(R.id.delete_button);
 
             result=convertView;
 
@@ -75,6 +81,8 @@ public class CustomAdapter extends ArrayAdapter<TaskDataModel> implements View.O
         viewHolder.startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                viewHolder.deleteButton.setEnabled(false);
+                viewHolder.deleteButton.setVisibility(View.INVISIBLE);
                 Object object= getItem(position);
                 TaskDataModel dataModel=(TaskDataModel)object;
                 new CountDownTimer(dataModel.getMilliseconds(), 1000){
@@ -84,9 +92,31 @@ public class CustomAdapter extends ArrayAdapter<TaskDataModel> implements View.O
                         viewHolder.txtTime.setText(String.format("%02d:%02d:%02d", s/3600, s/60%60, s%60));
                     }
                     public void onFinish(){
+                        viewHolder.deleteButton.setEnabled(true);
+                        viewHolder.deleteButton.setVisibility(View.VISIBLE);
                         viewHolder.txtTime.setText("00:00:00");
+                        NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext, MainActivity.PACKAGE_NAME)
+                                .setSmallIcon(R.mipmap.ic_launcher)
+                                .setContentTitle(viewHolder.txtName.getText())
+                                .setContentText(viewHolder.txtName.getText() + " is done!")
+                                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+                        NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(mContext.NOTIFICATION_SERVICE);
+                        // Hide the notification after it's selected
+                        Notification n = builder.build();
+                        notificationManager.notify(0, n);
                     }
                 }.start();
+            }
+        });
+        viewHolder.deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                TimerDBHelper mHelper = new TimerDBHelper(mContext);
+                SQLiteDatabase db = mHelper.getWritableDatabase();
+                db.delete(TimerDBContract.TimerEntry.TABLE_NAME, "TimerEntry._ID=?", new String[]{new Integer(getItem(position).getID()).toString()});
+                db.close();
+                dataSet.remove(getItem(position));
+                notifyDataSetChanged();
             }
         });
         //viewHolder.info.setOnClickListener(this);
